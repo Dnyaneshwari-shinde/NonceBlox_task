@@ -1,18 +1,47 @@
-import User from "../models/Users.js"
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import User from "../models/userModel.js"
 
-export const createNewUser = async (req,res) =>  {
-    console.log("here")
-    try {
-        const newUser = new User(req.body);
-        console.log("here 2", newUser)
-        const savedUser = await newUser.save();
-        console.log("here 3", savedUser)
-        res.status(201).json(savedUser);
-      } catch (err) {
-        res.status(400).json({ error: err.message });
-      }
-}
+export const createNewUser = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
 
+    const newUser = new User({ name, email, password: hashedPassword });
+    const savedUser = await newUser.save();
+
+    res.status(201).json(savedUser);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      SECRET_KEY,
+      { expiresIn: '1h' }
+    );
+
+    res.status(200).json({ message: 'Login successful', token });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 export const getUserDetails = async (req,res) =>  {
     try {
