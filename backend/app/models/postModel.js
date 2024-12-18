@@ -22,6 +22,10 @@ const postSchema = new mongoose.Schema({
     ref: 'User', // reference to User schema
     required: true,
   },
+  title: {
+    type: String,
+    required: true,
+  },
   content: {
     type: String,
     required: true,

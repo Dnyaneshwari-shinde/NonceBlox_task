@@ -2,10 +2,11 @@ import User from "../models/userModel.js";
 import Post from "../models/postModel.js";
 
 export const createPost = async (req, res) => {
-  const { content } = req.body;
+  const { content, title } = req.body;
   try {
     const newPost = new Post({
       userId: req.user.userId, // user id from JWT token
+      title,
       content,
     });
     const savedPost = await newPost.save();
