@@ -1,28 +1,36 @@
 import express from "express";
-const app = express();
-
-import bodyParser from "body-parser";
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
 import cors from "cors";
-app.use(cors());
+import mongoose from "mongoose";
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
-  next();
-});
+import userRoute from "./app/routers/userRoute.js"; 
+
+const app = express();
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
+
+
+app.use(cors({
+  origin: '*',
+  methods: 'GET,POST,PUT,DELETE,OPTIONS',
+  allowedHeaders: 'Content-Type,Authorization'
+}));
+
+// MongoDB Connection
+const MONGO_URI = "mongodb://0.0.0.0:27017/nonceblox_db";
+mongoose
+  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("Connection error:", err));
+
+// Routes
+app.use("/api", userRoute);
 
 
 app.get("/", (req, res) => {
-    res.send("Backend is running!");
+  res.send("Backend is running!");
 });
 
-app.listen(3000, () => {
-    console.log("Backend is running on port 3000");
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Backend is running on port ${PORT}`);
 });
