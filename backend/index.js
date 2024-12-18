@@ -3,6 +3,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 
 import userRoute from "./app/routers/userRoute.js"; 
+import postRoute from "./app/routers/postRouter.js";
 
 const app = express();
 app.use(express.json()); 
@@ -24,7 +25,7 @@ mongoose
 
 // Routes
 app.use("/api", userRoute);
-
+app.use("/api", postRoute);
 
 app.get("/", (req, res) => {
   res.send("Backend is running!");

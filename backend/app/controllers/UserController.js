@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import User from "../models/userModel.js"
+import User from "../models/userModel.js";
+
+const SECRET_KEY = "NonceBloxTask";
 
 export const createNewUser = async (req, res) => {
   try {
@@ -32,9 +34,9 @@ export const loginUser = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id },
       SECRET_KEY,
-      { expiresIn: '1h' }
+      { expiresIn: '5h' }
     );
 
     res.status(200).json({ message: 'Login successful', token });
