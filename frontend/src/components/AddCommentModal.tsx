@@ -23,7 +23,7 @@ const AddCommentModal: React.FC<AddCommentModalProps> = ({
       setError('Comment cannot be empty');
       return;
     }
-    setError(''); // Clear error if validation passes
+    setError(''); 
     onSubmit(comment);
   };
 
@@ -33,7 +33,7 @@ const AddCommentModal: React.FC<AddCommentModalProps> = ({
         <Modal.Title>Add Comment</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {error && <Alert variant="danger">{error}</Alert>} {/* Display error */}
+        {error && <Alert variant="danger">{error}</Alert>}
         <Form>
           <Form.Group controlId="comment">
             <Form.Label>Comment</Form.Label>

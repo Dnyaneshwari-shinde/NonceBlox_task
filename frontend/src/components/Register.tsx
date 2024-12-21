@@ -26,7 +26,6 @@ const Register = () => {
     try {
       const response = await axios.post('http://localhost:3000/api/createNewUser', formData);
       console.log('Registration successful:', response.data);
-      // Redirect to login or home page
       navigate('/login');
     } catch (err) {
       console.error('Error registering:', err);

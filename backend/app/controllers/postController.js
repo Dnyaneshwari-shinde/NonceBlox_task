@@ -5,7 +5,7 @@ export const createPost = async (req, res) => {
   const { content, title } = req.body;
   try {
     const newPost = new Post({
-      userId: req.user.userId, // user id from JWT token
+      userId: req.user.userId,
       title,
       content,
     });
@@ -34,7 +34,6 @@ export const likePost = async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Post not found' });
 
-
     // Add or remove user from the likes array
     const index = post.likes.indexOf(req.user.userId);
     if (index === -1) {
@@ -57,7 +56,7 @@ export const addComment = async (req, res) => {
     if (!post) return res.status(404).json({ error: 'Post not found' });
     console.log("post", post);
     const newComment = {
-      userId: req.user.userId, // user id from JWT token
+      userId: req.user.userId, 
       content,
     };
 
@@ -72,15 +71,16 @@ export const addComment = async (req, res) => {
 
 export const deletePost = async (req, res) => {
   try {
+    console.log("id", req.params.id)
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Post not found' });
 
-    // Ensure the user is the post owner before deleting
-    if (post.userId.toString() !== req.user.id) {
+    //check owner before deleteing
+    if (post.userId.toString() !== req.user.userId) {
       return res.status(403).json({ error: 'You can only delete your own posts' });
     }
 
-    await post.remove();
+    await post.deleteOne();
     res.status(200).json({ message: 'Post deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });

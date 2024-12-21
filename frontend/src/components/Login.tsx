@@ -26,10 +26,9 @@ const Login = () => {
       const response = await axios.post('http://localhost:3000/api/loginUser', formData);
       console.log('Login successful:', response.data);
 
-      // Save JWT token to localStorage or state management
       localStorage.setItem('token', response.data.token);
-
-      // Redirect to dashboard or home page
+      localStorage.setItem('userId', response.data.id);
+      localStorage.setItem('userName', response.data.name);
       navigate('/Home');
     } catch (err) {
       console.error('Error logging in:', err);

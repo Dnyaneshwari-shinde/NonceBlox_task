@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Row, Col, Container, Tabs, Tab, Form, FloatingLabel } from 'react-bootstrap';
 import axios from 'axios';
-import AddCommentModal from './AddCommentModal'; // Import the new component
+import { MdDelete } from "react-icons/md";
+import { FaHeart } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa6";
+import AddCommentModal from './AddCommentModal'; 
 import NewPost from "./NewPost";
 
 const Home = () => {
@@ -11,6 +14,8 @@ const Home = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [currentPostId, setCurrentPostId] = useState<string | null>(null);
   const [comment, setComment] = useState<string>('');
+
+  const loggedInUserId = localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -28,7 +33,7 @@ const Home = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-
+        console.log("data",response.data)
         setPosts(response.data);
       } catch (err) {
         setError('Failed to load posts');
@@ -38,7 +43,7 @@ const Home = () => {
     };
 
     fetchPosts();
-  }, []);
+  }, [posts]);
 
   const handleLike = async (postId: string) => {
     const token = localStorage.getItem('token');
@@ -46,7 +51,7 @@ const Home = () => {
       setError('No access token found');
       return;
     }
-
+   
     try {
       const response = await axios.put(
         `http://localhost:3000/api/post/like/${postId}`,
@@ -120,10 +125,30 @@ const Home = () => {
     return <div>{error}</div>;
   }
 
+  const deleteUserPost = async(postId: string)  =>  {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No access token.');
+      return;
+    }
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/api/post/${postId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert(response.data.message);
+    } catch (err) {
+      console.error('Failed to add comment', err);
+    }
+  }
+
+
   return (
     <div className="auth-wrapper align-items-stretch aut-bg-img">
-      {/* <div className="flex-grow-1">
-        <div className="h-100 d-md-flex align-items-center auth-side-img"> */}
         <Tabs defaultActiveKey="post" id="uncontrolled-tab-example" className="mb-3">
         <Tab eventKey="post" title="Posts">
           <Container>
@@ -140,12 +165,19 @@ const Home = () => {
                           e.preventDefault();
                           handleLike(post._id);
                         }}>
-                        {post.likes.length} Likes
+                        {post.likes.some((i: { _id: string | null; }) => i._id === loggedInUserId) ? (
+                          <><FaHeart /> {post.likes.length} Likes </>
+                        ) : (
+                          <><FaRegHeart /> {post.likes.length} Likes</>
+                        )}
                       </Card.Link>
                       <Card.Link href="#">{post.comments.length} Comments</Card.Link>
                       <div className="d-flex justify-content-between mt-3">
                         <Button variant="primary" onClick={() => openModal(post._id)}> Add Comment </Button>
                         <Button variant="secondary">Read Comments</Button>
+                        {post.userId._id === loggedInUserId && (
+                        <MdDelete size={40} onClick={()  => deleteUserPost(post._id)}/>
+                      )}
                       </div>
                     </Card.Body>
                   </Card>
@@ -158,8 +190,6 @@ const Home = () => {
            <NewPost/>
           </Tab>
           </Tabs>
-        {/* </div>
-      </div> */}
 
       <AddCommentModal
         show={showModal}

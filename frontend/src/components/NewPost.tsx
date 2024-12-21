@@ -33,7 +33,6 @@ const NewPost = () => {
         },
       });
       console.log('Post is created', response.data);
-      // Redirect to login or home page
       alert("Post is created");
     } catch (err) {
       console.error('Error registering:', err);

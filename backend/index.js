@@ -32,6 +32,8 @@ app.get("/", (req, res) => {
 });
 
 const PORT = 3000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Backend is running on port ${PORT}`);
 });
+
+export default app;
